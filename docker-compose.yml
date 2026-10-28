@@ -1,0 +1,31 @@
+services:
+  database:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: auction
+      POSTGRES_PASSWORD: auction
+      POSTGRES_DB: verzel_auction
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U auction -d verzel_auction"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+  app:
+    build: .
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://auction:auction@database:5432/verzel_auction
+      APP_ORIGIN: http://localhost:4000
+      PORT: 4000
+      COOKIE_SECURE: "false"
+    ports:
+      - "4000:4000"
+    depends_on:
+      database:
+        condition: service_healthy
+volumes:
+  postgres_data:

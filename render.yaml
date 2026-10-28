@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: verzel-leiloes
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: COOKIE_SECURE
+        value: "true"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: verzel-leiloes-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: AUDIT_SECRET
+        generateValue: true
+      - key: DEMO_PASSWORD
+        value: DemoAuction#2026
+databases:
+  - name: verzel-leiloes-db
+    plan: free
+    postgresMajorVersion: "17"
